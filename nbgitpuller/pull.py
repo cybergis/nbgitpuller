@@ -8,6 +8,8 @@ from traitlets import Integer, default
 from traitlets.config import Configurable
 from functools import partial
 
+###HydroShare
+from hs_restclient import HydroShare
 
 def execute_cmd(cmd, **kwargs):
     """
@@ -253,3 +255,21 @@ def main():
         args.repo_dir
     ).pull():
         print(line)
+
+
+######## HydroShare ######
+
+
+class HSPuller:
+    def __init__(self, id, hs):
+        assert id
+        self.id = id
+        self.hs = hs
+
+    def pull(self):
+        """
+        Pull selected repo from a remote hydroshare repository,
+        """
+        yield 'Successfully established a connection with HydroShare'
+        download_dir = os.environ.get('JUPYTER_DOWNLOADS', 'work/Downloads')
+        self.hs.getResource(self.id, destination=download_dir, unzip=True)
