@@ -76,7 +76,8 @@ class SyncHandler(IPythonHandler):
                     repo_dir = os.path.join(repo_parent_dir, targetpath)
                 else:
                     prefix = self.get_argument('prefix', '')
-                    raise Exception(prefix)
+                    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    print(prefix)
                     repo_dir = os.path.join(repo_parent_dir, prefix, repo.split('/')[-1])
 
             except:
