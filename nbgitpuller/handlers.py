@@ -66,7 +66,7 @@ class SyncHandler(IPythonHandler):
             repo_parent_dir = os.path.join(os.path.expanduser(os.getenv('JUPYTER_SERVER_ROOT', '')),
                                            os.getenv('NBGITPULLER_PARENTPATH', ''))
 
-            raise Exception(os.getenv('JUPYTER_SERVER_ROOT') + ";" + self.get_argument('targetpath', repo.split('/')[-1]))
+            raise Exception(self.settings['nbapp'].notebook_dir)
             repo_dir = os.path.join(repo_parent_dir, self.get_argument('targetpath', repo.split('/')[-1]))
 
             # # The default working directory is the directory from which Jupyter
