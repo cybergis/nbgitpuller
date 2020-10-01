@@ -63,15 +63,21 @@ class SyncHandler(IPythonHandler):
                 ## Env Var JUPYTER_SERVER_ROOT === c.NotebookApp.notebook_dir
                 ## Env Var JUPYTER_SERVER_URL === c.NotebookApp.connection_url
                 ## Change to use JUPYTER_SERVER_ROOT(c) as the root folder for clone
-                ## the final folder would be: JUPYTER_SERVER_ROOT + NBGITPULLER_PARENTPATH  + RepoName (if parameter "targetpath" does NOT exist in url)
+                ## the final folder would be: JUPYTER_SERVER_ROOT + NBGITPULLER_PARENTPATH  + prefix + RepoName (if parameter "targetpath" does NOT exist in url)
                 ##                        or: JUPYTER_SERVER_ROOT + NBGITPULLER_PARENTPATH + targetpath
 
                 # Env Var JUPYTER_SERVER_ROOT is not accessible here, so use nbapp obj
                 notebook_dir = self.settings['nbapp'].notebook_dir
                 repo_parent_dir = os.path.join(notebook_dir,
                                                os.getenv('NBGITPULLER_PARENTPATH', ''))
-                repo_dir = os.path.join(repo_parent_dir, self.get_argument('targetpath', repo.split('/')[-1]))
-                    
+
+                targetpath = self.get_argument('targetpath', None)
+                if targetpath is not None:
+                    repo_dir = os.path.join(repo_parent_dir, targetpath)
+                else:
+                    prefix = self.get_argument('prefix', '')
+                    repo_dir = os.path.join(repo_parent_dir, prefix, repo.split('/')[-1])
+
             except:
                 # The default working directory is the directory from which Jupyter
                 # server is launched, which is not the same as the root notebook
