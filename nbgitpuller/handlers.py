@@ -62,7 +62,7 @@ class SyncHandler(IPythonHandler):
             ## Env Var JUPYTER_SERVER_URL === c.NotebookApp.connection_url
             ## Change to use JUPYTER_SERVER_ROOT(c) as the root folder for clone
             ## the final folder would be: JUPYTER_SERVER_ROOT + NBGITPULLER_PARENTPATH + targetpath + RepoName
-            repo_parent_dir = os.path.join(os.path.expanduser(os.getenv['JUPYTER_SERVER_ROOT'], ''),
+            repo_parent_dir = os.path.join(os.path.expanduser(os.getenv('JUPYTER_SERVER_ROOT'), ''),
                                            os.getenv('NBGITPULLER_PARENTPATH', ''))
             repo_dir = os.path.join(repo_parent_dir, self.get_argument('targetpath', repo.split('/')[-1]))
 
