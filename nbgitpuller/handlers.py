@@ -76,6 +76,8 @@ class SyncHandler(IPythonHandler):
                 repo_dir = os.path.join(repo_parent_dir,
                                         subfolder,
                                         self.get_argument('targetpath', repo.split('/')[-1]))
+                logging.error("!!!!!!!!!!!!!" + subfolder)
+                logging.error("!!!!!!!!!!!!!" + repo_dir)
 
 
             except:
