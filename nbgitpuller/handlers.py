@@ -309,12 +309,13 @@ class HSyncHandler(IPythonHandler):
     def get(self):
         try:
             id = self.get_argument('id')
+            download_folder_path = self.get_argument('download_folder_path')
 
             # We gonna send out event streams!
             self.set_header('content-type', 'text/event-stream')
             self.set_header('cache-control', 'no-cache')
 
-            hs = HSPuller(id, self.settings['hydroshare'])
+            hs = HSPuller(id, self.settings['hydroshare'], download_folder_path)
 
             q = Queue()
 
@@ -396,7 +397,6 @@ class HSHandler(IPythonHandler):
     def login(self):
         hs = None
 
-        # check for oauth
         # check for oauth
         authfile = os.path.expanduser("~/work/.hs_auth")
         try:
@@ -480,7 +480,7 @@ class HSHandler(IPythonHandler):
         goto - Do not overwrite.  Just go to the resouce
         """
 
-        app_env = 'notebook'
+        app_env = os.getenv('NBGITPULLER_APP', default='notebook')
         self.log.info('HS GET ' + str(self.request.uri))
 
         self.login()
@@ -494,37 +494,46 @@ class HSHandler(IPythonHandler):
         self.log.info('GET %s %s %s %s %s' % (id, start, app, overwrite, goto))
 
         # create Downloads directory if necessary
-        download_dir = os.environ.get('JUPYTER_DOWNLOADS', 'work/Downloads')
-        if not os.path.isdir(download_dir):
-            os.makedirs(download_dir)
 
-        nbdir = os.environ.get('NOTEBOOK_HOME')
-        relative_download_dir = os.path.relpath(download_dir, nbdir)
-        pathid = os.path.join(relative_download_dir, id)
-        if os.path.exists(pathid) and goto == 0 and overwrite == 0:
+        ##download_dir = os.environ.get('JUPYTER_DOWNLOADS', 'work/Downloads')
+        download_root = self.settings['nbapp'].notebook_dir
+        download_relative_path = os.path.join(
+                                         os.getenv('NBGITPULLER_PARENTPATH', ''),
+                                         self.get_argument('subfolder', ''))
+        download_folder_path = os.path.join(download_root, download_relative_path)
+
+        if not os.path.isdir(download_folder_path):
+            os.makedirs(download_folder_path)
+
+        ## nbdir = os.environ.get('NOTEBOOK_HOME')
+        ## relative_download_dir = os.path.relpath(download_dir, nbdir)
+        resource_folder = os.path.join(download_folder_path, id)
+        if os.path.exists(resource_folder) and goto == 0 and overwrite == 0:
             # overwrite or not? display modal dialog
-            self.write(self.render_template('confirm.html', directory=pathid))
+            self.write(self.render_template('confirm.html', directory=download_relative_path))
             self.flush()
             return
 
-        path = os.path.join(pathid, id, 'data', 'contents', start)
+        redirect_rel_path = os.path.join(download_relative_path, id, 'data', 'contents', start)
 
         if app.lower() == 'lab':
-            path = 'lab/tree/' + path
-        elif path.lower().endswith('.ipynb'):
-            path = 'notebooks/' + path
+            redirect_rel_path = 'lab/tree/' + redirect_rel_path
+        elif redirect_rel_path.lower().endswith('.ipynb'):
+            redirect_rel_path = 'notebooks/' + redirect_rel_path
         else:
-            path = 'tree/' + path
+            redirect_rel_path = 'tree/' + redirect_rel_path
 
-        self.log.info('path=%s' % path)
-        path = path.replace("/work/Downloads/", "/Downloads/")
+        self.log.info('redirect_rel_path=%s' % redirect_rel_path)
         if goto:
-            self.redirect(path)
+            self.redirect(redirect_rel_path)
             return
 
         self.write(
             self.render_template(
                 'hstatus.html',
-                id=id, path=path, version=__version__
+                id=id,
+                redirect_rel_path=redirect_rel_path,
+                version=__version__,
+                download_folder_path=download_folder_path,
             ))
         self.flush()

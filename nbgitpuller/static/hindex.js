@@ -12,12 +12,13 @@ require([
 
     Terminal.applyAddon(fit);
 
-    function GitSync(baseUrl, id, path) {
+    function GitSync(baseUrl, id, redirect_rel_path, download_folder_path) {
         console.log("HINDEX GitSync");
         // Class that talks to the API backend & emits events as appropriate
         this.baseUrl = baseUrl;
         this.id = id;
-        this.redirectUrl = baseUrl + path;
+        this.redirectUrl = baseUrl + redirect_rel_path;
+        this.download_folder_path = download_folder_path;
         this.callbacks = {};
     }
 
@@ -121,7 +122,8 @@ require([
     var gs = new GitSync(
         utils.get_body_data('baseUrl'),
         utils.get_body_data('id'),
-        utils.get_body_data('path')
+        utils.get_body_data('redirect_rel_path'),
+        utils.get_body_data('download_folder_path')
     );
 
     var gsv = new GitSyncView(

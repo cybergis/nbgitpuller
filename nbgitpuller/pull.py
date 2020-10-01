@@ -261,15 +261,16 @@ def main():
 
 
 class HSPuller:
-    def __init__(self, id, hs):
+    def __init__(self, id, hs, download_folder_path):
         assert id
         self.id = id
         self.hs = hs
+        self.download_folder_path = download_folder_path
 
     def pull(self):
         """
         Pull selected repo from a remote hydroshare repository,
         """
         yield 'Successfully established a connection with HydroShare'
-        download_dir = os.environ.get('JUPYTER_DOWNLOADS', 'work/Downloads')
-        self.hs.getResource(self.id, destination=download_dir, unzip=True)
+
+        self.hs.getResource(self.id, destination=self.download_folder_path, unzip=True)

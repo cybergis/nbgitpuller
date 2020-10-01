@@ -4,7 +4,8 @@
 {{super()}}
 data-base-url="{{ base_url | urlencode }}"
 data-id="{{ id | urlencode }}"
-data-path="{{ path | urlencode }}"
+data-redirect_rel_path="{{ redirect_rel_path | urlencode }}"
+data-download_folder_path="{{ download_folder_path | urlencode}}"
 {% endblock %}
 
 {% block site %}
