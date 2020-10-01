@@ -281,6 +281,7 @@ class HSLoginHandler(IPythonHandler):
         self.redirect(url_unescape(self.get_argument("next", "/")))
 
 
+# Handle request from hstatus.html
 class HSyncHandler(IPythonHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -368,6 +369,7 @@ class HSyncHandler(IPythonHandler):
             })
 
 
+# handel user request and render hstatus.html
 class HSHandler(IPythonHandler):
     def initialize(self):
         super().initialize()

@@ -29,6 +29,11 @@ def load_jupyter_server_extension(nbapp):
             StaticFileHandler,
             {'path': os.path.join(os.path.dirname(__file__), 'static')}
         ),
+        (
+            url_path_join(hs_url, 'static', '(.*)'),
+            StaticFileHandler,
+            {'path': os.path.join(os.path.dirname(__file__), 'static')}
+        ),
         (url_path_join(web_app.settings['base_url'], 'hslogin'), HSLoginHandler),
     ]
     web_app.settings['nbapp'] = nbapp
