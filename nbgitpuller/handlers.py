@@ -56,18 +56,28 @@ class SyncHandler(IPythonHandler):
             depth = self.get_argument('depth', None)
             if depth:
                 depth = int(depth)
-            # The default working directory is the directory from which Jupyter
-            # server is launched, which is not the same as the root notebook
-            # directory assuming either --notebook-dir= is used from the
-            # command line or c.NotebookApp.notebook_dir is set in the jupyter
-            # configuration. This line assures that all repos are cloned
-            # relative to server_root_dir/<optional NBGITPULLER_PARENTPATH>,
-            # so that all repos are always in scope after cloning. Sometimes
-            # server_root_dir will include things like `~` and so the path
-            # must be expanded.
-            repo_parent_dir = os.path.join(os.path.expanduser(self.settings['server_root_dir']),
+            ## Drew 10/01/2020
+            ## see: https://github.com/jupyter/notebook/blob/0df10dee3ee7e8c0f56f879b69d37070fccca1c7/notebook/terminal/__init__.py#L37
+            ## Env Var JUPYTER_SERVER_ROOT === c
+            ## Env Var JUPYTER_SERVER_URL === c.NotebookApp.connection_url
+            ## Change to use JUPYTER_SERVER_ROOT(c) as the root folder for clone
+            ## the final folder would be: JUPYTER_SERVER_ROOT + NBGITPULLER_PARENTPATH + targetpath + RepoName
+            repo_parent_dir = os.path.join(os.path.expanduser(os.getenv['JUPYTER_SERVER_ROOT'], ''),
                                            os.getenv('NBGITPULLER_PARENTPATH', ''))
             repo_dir = os.path.join(repo_parent_dir, self.get_argument('targetpath', repo.split('/')[-1]))
+
+            # # The default working directory is the directory from which Jupyter
+            # # server is launched, which is not the same as the root notebook
+            # # directory assuming either --notebook-dir= is used from the
+            # # command line or c.NotebookApp.notebook_dir is set in the jupyter
+            # # configuration. This line assures that all repos are cloned
+            # # relative to server_root_dir/<optional NBGITPULLER_PARENTPATH>,
+            # # so that all repos are always in scope after cloning. Sometimes
+            # # server_root_dir will include things like `~` and so the path
+            # # must be expanded.
+            # repo_parent_dir = os.path.join(os.path.expanduser(self.settings['server_root_dir']),
+            #                                os.getenv('NBGITPULLER_PARENTPATH', ''))
+            # repo_dir = os.path.join(repo_parent_dir, self.get_argument('targetpath', repo.split('/')[-1]))
 
             # We gonna send out event streams!
             self.set_header('content-type', 'text/event-stream')
