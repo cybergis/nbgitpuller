@@ -75,7 +75,8 @@ class SyncHandler(IPythonHandler):
                 targetpath = self.get_argument('targetpath', None)
                 if targetpath is not None:
                     repo_dir = os.path.join(repo_parent_dir, targetpath)
-                    logging.error('!!!!!!!!!!!!!targetpath is not None:' + repo_dir)
+                    logging.error('!!!!!!!!!!!!!targetpath is not None:' + targetpath)
+                    logging.error('!!!!!!!!!!!!!targetpath is not None:' + repo_parent_dir)
                 else:
                     prefix = self.get_argument('prefix', '')
                     repo_dir = os.path.join(repo_parent_dir, prefix, repo.split('/')[-1])
