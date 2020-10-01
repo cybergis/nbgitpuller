@@ -71,13 +71,11 @@ class SyncHandler(IPythonHandler):
                 repo_parent_dir = os.path.join(notebook_dir,
                                                os.getenv('NBGITPULLER_PARENTPATH', ''))
 
-                targetpath = self.get_argument('targetpath')
+                targetpath = self.get_argument('targetpath', None)
                 if targetpath is not None:
                     repo_dir = os.path.join(repo_parent_dir, targetpath)
                 else:
                     prefix = self.get_argument('prefix', '')
-                    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                    print(prefix)
                     repo_dir = os.path.join(repo_parent_dir, prefix, repo.split('/')[-1])
 
             except:
