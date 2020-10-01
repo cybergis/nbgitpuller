@@ -60,11 +60,16 @@ class SyncHandler(IPythonHandler):
 
             try:
                 ## Drew 10/01/2020
+                ## The request made to this endpoint is not orginated from user
+                ## Instead, it is made from the template\status.html
+                ## See: https://github.com/jupyterhub/nbgitpuller/blob/master/nbgitpuller/__init__.py#L20
+                ## User request made to UIHandler, which parses and modifies url paratemers, and renders template\status.html
+                ## template\status.html then makes requests to "git-pull/api?", handled by this SyncHandler
                 ## see: https://github.com/jupyter/notebook/blob/0df10dee3ee7e8c0f56f879b69d37070fccca1c7/notebook/terminal/__init__.py#L37
+
                 ## Env Var JUPYTER_SERVER_ROOT === c.NotebookApp.notebook_dir
-                ## Env Var JUPYTER_SERVER_URL === c.NotebookApp.connection_url
-                ## Change to use JUPYTER_SERVER_ROOT(c) as the root folder for clone
-                ## the final folder would be: JUPYTER_SERVER_ROOT + NBGITPULLER_PARENTPATH  + prefix + RepoName (if parameter "targetpath" does NOT exist in url)
+                ## Change to use JUPYTER_SERVER_ROOT(notebook_dir) as the root folder for clone
+                ## the final folder would be: JUPYTER_SERVER_ROOT + NBGITPULLER_PARENTPATH + RepoName (if parameter "targetpath" does NOT exist in url)
                 ##                        or: JUPYTER_SERVER_ROOT + NBGITPULLER_PARENTPATH + targetpath
 
                 # Env Var JUPYTER_SERVER_ROOT is not accessible here, so use nbapp obj
@@ -73,7 +78,8 @@ class SyncHandler(IPythonHandler):
                                                os.getenv('NBGITPULLER_PARENTPATH', ''))
 
                 repo_dir = os.path.join(repo_parent_dir, self.get_argument('targetpath', repo.split('/')[-1]))
-
+                logging.warning("Using notebook_dir(JUPYTER_SERVER_ROOT) as root path for git clone: " + notebook_dir)
+                logging.warning("Final full path for git clone: " + repo_dir)
 
             except:
                 # The default working directory is the directory from which Jupyter
@@ -178,14 +184,18 @@ class UIHandler(IPythonHandler):
         app = self.get_argument('app', app_env)
         parent_reldir = os.getenv('NBGITPULLER_PARENTPATH', '')
         # targetpath = self.get_argument('targetpath', None) or \
-        #              c, repo.split('/')[-1])
+        #              self.get_argument('targetPath', repo.split('/')[-1])
 
-        ## add url parameter "subfolder" --- Drew 10/01/2020
-        targetpath = self.get_argument('targetpath', None) or self.get_argument('targetpath', None)
+        ## Add url parameter "subfolder" --- Drew 10/01/2020
+        ## if "targetpath" or "targetPath" does not exist
+        ## set targetpath = subfolder + repo.split('/')[-1]
+        targetpath = self.get_argument('targetpath', None) or self.get_argument('targetPath', None)
         if targetpath is None:
             targetpath = os.path.join(self.get_argument('subfolder', ''),
                                       repo.split('/')[-1])
+        logging.warning("targetpath is updated: " + targetpath)
 
+        ## urlPath is the url users get redircted to after git clone
         if urlPath:
             path = urlPath
         else:
@@ -196,6 +206,8 @@ class UIHandler(IPythonHandler):
                 path = 'notebooks/' + path
             else:
                 path = 'tree/' + path
+
+        logging.warning("Will redirect user after git clone: " + path)
 
         self.write(
             self.render_template(
