@@ -72,15 +72,11 @@ class SyncHandler(IPythonHandler):
                 repo_parent_dir = os.path.join(notebook_dir,
                                                os.getenv('NBGITPULLER_PARENTPATH', ''))
 
-                targetpath = self.get_argument('targetpath', None)
-                if targetpath is not None:
-                    repo_dir = os.path.join(repo_parent_dir, targetpath)
-                    logging.error('!!!!!!!!!!!!!targetpath is not None:' + targetpath)
-                    logging.error('!!!!!!!!!!!!!targetpath is not None:' + repo_parent_dir)
-                else:
-                    prefix = self.get_argument('prefix', '')
-                    repo_dir = os.path.join(repo_parent_dir, prefix, repo.split('/')[-1])
-                    logging.error('!!!!!!!!!!!!!targetpath is None:' + repo_dir)
+                subfolder = self.get_argument('subfolder', '')
+                repo_dir = os.path.join(repo_parent_dir,
+                                        subfolder,
+                                        self.get_argument('targetpath', repo.split('/')[-1]))
+
 
             except:
                 # The default working directory is the directory from which Jupyter
