@@ -8,6 +8,7 @@ import json
 import os
 from queue import Queue, Empty
 import jinja2
+import logging
 
 from .pull import GitPuller
 from .version import __version__
@@ -74,9 +75,11 @@ class SyncHandler(IPythonHandler):
                 targetpath = self.get_argument('targetpath', None)
                 if targetpath is not None:
                     repo_dir = os.path.join(repo_parent_dir, targetpath)
+                    logging.error('!!!!!!!!!!!!!targetpath is not None:' + repo_dir)
                 else:
                     prefix = self.get_argument('prefix', '')
                     repo_dir = os.path.join(repo_parent_dir, prefix, repo.split('/')[-1])
+                    logging.error('!!!!!!!!!!!!!targetpath is None:' + repo_dir)
 
             except:
                 # The default working directory is the directory from which Jupyter
