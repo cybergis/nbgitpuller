@@ -72,12 +72,7 @@ class SyncHandler(IPythonHandler):
                 repo_parent_dir = os.path.join(notebook_dir,
                                                os.getenv('NBGITPULLER_PARENTPATH', ''))
 
-                subfolder = self.get_argument('subfolder', '')
-                repo_dir = os.path.join(repo_parent_dir,
-                                        subfolder,
-                                        self.get_argument('targetpath', repo.split('/')[-1]))
-                logging.error("!!!!!!!!!!!!!" + subfolder)
-                logging.error("!!!!!!!!!!!!!" + repo_dir)
+                repo_dir = os.path.join(repo_parent_dir, self.get_argument('targetpath', repo.split('/')[-1]))
 
 
             except:
@@ -182,8 +177,14 @@ class UIHandler(IPythonHandler):
                   self.get_argument('subPath', '.')
         app = self.get_argument('app', app_env)
         parent_reldir = os.getenv('NBGITPULLER_PARENTPATH', '')
-        targetpath = self.get_argument('targetpath', None) or \
-                     self.get_argument('targetPath', repo.split('/')[-1])
+        # targetpath = self.get_argument('targetpath', None) or \
+        #              c, repo.split('/')[-1])
+
+        ## add url parameter "subfolder" --- Drew 10/01/2020
+        targetpath = self.get_argument('targetpath', None) or self.get_argument('targetpath', None)
+        if targetpath is None:
+            targetpath = os.path.join(self.get_argument('subfolder', ''),
+                                      repo.split('/')[-1])
 
         if urlPath:
             path = urlPath
