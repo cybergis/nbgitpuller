@@ -311,7 +311,7 @@ class HSyncHandler(IPythonHandler):
             id = self.get_argument('id')
             download_folder_path = self.get_argument('download_folder_path', None)
             if download_folder_path is None:
-                download_folder_path = os.path.join(
+                c = os.path.join(
                                          self.settings['nbapp'].notebook_dir,
                                          os.getenv('NBGITPULLER_PARENTPATH', ''),
                                          self.get_argument('subfolder', ''))
@@ -319,6 +319,7 @@ class HSyncHandler(IPythonHandler):
             # We gonna send out event streams!
             self.set_header('content-type', 'text/event-stream')
             self.set_header('cache-control', 'no-cache')
+            self.log.warning("!!!!!!!hs-pull: " + download_folder_path)
 
             hs = HSPuller(id, self.settings['hydroshare'], download_folder_path)
 

@@ -273,4 +273,5 @@ class HSPuller:
         """
         yield 'Successfully established a connection with HydroShare'
 
-        self.hs.getResource(self.id, destination=self.download_folder_path, unzip=True)
+        #self.hs.getResource(self.id, destination=self.download_folder_path, unzip=True)
+        self.hs.getResource(self.id, destination="/home/jovyan/work/myDownloads", unzip=True)
