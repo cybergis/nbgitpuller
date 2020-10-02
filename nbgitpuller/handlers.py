@@ -311,7 +311,7 @@ class HSyncHandler(IPythonHandler):
             id = self.get_argument('id')
             download_folder_path = self.get_argument('download_folder_path', None)
             if download_folder_path is None:
-                c = os.path.join(
+                download_folder_path = os.path.join(
                                          self.settings['nbapp'].notebook_dir,
                                          os.getenv('NBGITPULLER_PARENTPATH', ''),
                                          self.get_argument('subfolder', ''))
