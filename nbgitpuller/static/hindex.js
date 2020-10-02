@@ -42,7 +42,8 @@ require([
         console.log('START');
         // Start git pulling handled by SyncHandler, declared in handlers.py
         var syncUrl = this.baseUrl + 'hs-pull/api?' + $.param({
-            id: this.id
+            id: this.id,
+            download_folder_path: this.download_folder_path,
         });
 
         this.eventSource = new EventSource(syncUrl);
