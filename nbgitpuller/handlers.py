@@ -519,8 +519,8 @@ class HSHandler(IPythonHandler):
             self.write(self.render_template('confirm.html', directory=download_relative_path))
             self.flush()
             return
-
-        redirect_rel_path = os.path.join(download_relative_path, id, 'data', 'contents', start)
+        ## myDownloads/4cbcfdd6e7f943e2969dd52e780bc52d/4cbcfdd6e7f943e2969dd52e780bc52d/data/contents/Data_Processing_example_1_A_Watershed_Delineation_Example_using_GRASS_GIS_in_CyberGIS_Jupyter_for_water.ipynb
+        redirect_rel_path = os.path.join(download_relative_path, id, id, 'data', 'contents', start)
 
         if app.lower() == 'lab':
             redirect_rel_path = 'lab/tree/' + redirect_rel_path
